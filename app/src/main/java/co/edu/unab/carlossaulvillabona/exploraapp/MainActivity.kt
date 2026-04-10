@@ -30,10 +30,24 @@ class MainActivity : ComponentActivity() {
                 modifier = Modifier.fillMaxSize()
             )  {
                 composable("login") {
-                    LoginScreen(onLoginSuccess = {}, onNavigateToRegister = {})
+                    LoginScreen(onLoginSuccess = {}, onNavigateToRegister = {
+                        navController.navigate("register")
+                    })
                 }
-                composable ("register") {
-                    RegisterScreen(onRegisterSuccess = {}, onNavigateToLogin = {})
+                composable("register") {
+                    RegisterScreen(
+                        onRegisterSuccess = {
+                            navController.navigate("home") {
+                                popUpTo("login") { inclusive = true }
+                            }
+                        },
+                        onNavigateToLogin = {
+                            navController.popBackStack()
+                        },
+                        onBackClick = {
+                            navController.popBackStack()
+                        }
+                    )
                 }
             }
 
