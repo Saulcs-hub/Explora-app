@@ -20,6 +20,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
+import androidx.compose.runtime.LaunchedEffect
 
 data class Destino(
     val nombre: String,
@@ -30,9 +33,23 @@ data class Destino(
 
 @Composable
 fun HomeScreen(
-    userName: String = "Carlos Saúl",
-    onNavigateToProfile: () -> Unit = {}
+    onLogout: () -> Unit = {}  // ← nuevo parámetro para cerrar sesión
 ) {
+    val auth = Firebase.auth
+    val user = auth.currentUser
+
+    var userName by remember { mutableStateOf("Cargando...") }
+
+    LaunchedEffect(user) {
+        user?.reload()?.addOnCompleteListener {
+            userName = when {
+                !user.displayName.isNullOrBlank() -> user.displayName!!        // tiene nombre
+                !user.email.isNullOrBlank() -> user.email!!                    // tiene email
+                else -> "Viajero"                                               // no tiene nada
+            }
+        }
+    }
+
     val primaryOrange = Color(0xFFE45D25)
     val lightGrayBg = Color(0xFFF8F9FE)
 
@@ -70,26 +87,51 @@ fun HomeScreen(
                                 fontSize = 13.sp
                             )
                             Text(
-                                text = userName,
+                                text = userName,  // ← muestra el nombre real de Firebase
                                 color = Color.White,
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold
                             )
                         }
-                        // Avatar
-                        Box(
-                            modifier = Modifier
-                                .size(42.dp)
-                                .clip(CircleShape)
-                                .background(Color.White.copy(alpha = 0.25f)),
-                            contentAlignment = Alignment.Center
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Text(
-                                text = userName.take(2).uppercase(),
-                                color = Color.White,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 14.sp
-                            )
+                            // Avatar con iniciales
+                            Box(
+                                modifier = Modifier
+                                    .size(42.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.White.copy(alpha = 0.25f)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = userName.take(2).uppercase(),
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 14.sp
+                                )
+                            }
+
+                            // ✅ Botón cerrar sesión
+                            IconButton(
+                                onClick = {
+                                    auth.signOut()
+                                    onLogout()
+                                },
+                                modifier = Modifier
+                                    .size(42.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.White.copy(alpha = 0.25f))
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.ExitToApp,
+                                    contentDescription = "Cerrar sesión",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
                         }
                     }
 
@@ -124,7 +166,6 @@ fun HomeScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(20.dp)
             ) {
-                // Categorías
                 Text("Categorías", fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 Spacer(modifier = Modifier.height(12.dp))
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -144,7 +185,6 @@ fun HomeScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Destinos populares
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -164,16 +204,11 @@ fun HomeScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Banner promo
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(16.dp))
-                        .background(
-                            Brush.horizontalGradient(
-                                listOf(primaryOrange, Color(0xFFFF8A65))
-                            )
-                        )
+                        .background(Brush.horizontalGradient(listOf(primaryOrange, Color(0xFFFF8A65))))
                         .padding(20.dp)
                 ) {
                     Column {
