@@ -3,13 +3,13 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    // El de Google Services lo dejamos con ID si no lo tienes en el catálogo libs
     id("com.google.gms.google-services")
+
 }
 
 android {
     namespace = "co.edu.unab.carlossaulvillabona.exploraapp"
-    compileSdk = 35 // Cambié de 36 a 35 porque 36 es una versión "Preview" que puede dar errores
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "co.edu.unab.carlossaulvillabona.exploraapp"
@@ -53,15 +53,14 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
-    // Íconos extendidos (para que funcione el de Visibility)
+    // Íconos extendidos
     implementation("androidx.compose.material:material-icons-extended:1.7.0")
 
     // Navegación
     implementation("androidx.navigation:navigation-compose:2.8.0")
 
-    // Firebase (Usando BOM para gestionar versiones automáticamente)
+    // Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
-    // 2. Librerías de Firebase (SIN los dos puntos al final)
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-firestore-ktx")
 
@@ -71,6 +70,7 @@ dependencies {
 
     // Corrutinas para Firebase
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")
+    implementation(libs.firebase.auth)
 
     // Tests
     testImplementation(libs.junit)

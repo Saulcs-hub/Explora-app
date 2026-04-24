@@ -22,7 +22,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            NavigationApp()
+            ExploraappTheme {
+                AppNavigation()
+            }
         }
     }
 }

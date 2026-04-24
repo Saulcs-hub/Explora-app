@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "783715259699",
+    "project_id": "exploraapp-8215f",
+    "storage_bucket": "exploraapp-8215f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:783715259699:android:d385684a400cea39ed1a46",
+        "android_client_info": {
+          "package_name": "co.edu.unab.carlossaulvillabona.exploraapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4gFbo6v7eLLgdVOLOpxVUjspJxjpahoI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

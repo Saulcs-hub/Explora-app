@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -28,37 +27,29 @@ import androidx.compose.ui.text.input.*
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lint.kotlin.metadata.Visibility
+
 
 @Composable
 fun RegisterScreen(
     onRegisterSuccess: () -> Unit,
     onNavigateToLogin: () -> Unit,
-    onBackClick: () -> Unit = {},
-    authViewModel: AuthViewModel = viewModel()
+    modifier: Modifier = Modifier,
+    onBackClick: () -> Unit = {}
 ) {
-    // 1. Variables de estado (corregidas para que coincidan con el uso)
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var acceptedTerms by remember { mutableStateOf(false) }
-    var passwordVisible by remember { mutableStateOf(false) }
-    var confirmPasswordVisible by remember { mutableStateOf(false) }
-
-    val uiState by authViewModel.uiState.collectAsStateWithLifecycle()
 
     val primaryOrange = Color(0xFFE45D25)
     val lightGrayBg = Color(0xFFF8F9FE)
     val inputBg = Color(0xFFE5E5EA)
 
-    LaunchedEffect(uiState.isSuccess) {
-        if (uiState.isSuccess) onRegisterSuccess()
-    }
-
-    Surface(modifier = Modifier.fillMaxSize(), color = lightGrayBg) {
+    Surface(
+        modifier = modifier.fillMaxSize(),
+        color = lightGrayBg
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -66,119 +57,127 @@ fun RegisterScreen(
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Botón Atrás
-            IconButton(onClick = onBackClick,
+            IconButton(
+                onClick = onBackClick,
                 modifier = Modifier
                     .align(Alignment.Start)
-                    .offset(x = (-12).dp)) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = primaryOrange)
+                    .offset(x = (-12).dp)
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = null,
+                    tint = primaryOrange
+                )
             }
 
             Spacer(modifier = Modifier.height(8.dp))
-            Text("Explorando Colombia", color = primaryOrange, fontSize = 22.sp,
-                fontWeight = FontWeight.Bold, modifier = Modifier.align(Alignment.Start))
-            Spacer(modifier = Modifier.height(32.dp))
-            Text("Crea tu cuenta", fontSize = 32.sp, fontWeight = FontWeight.Bold,
-                modifier = Modifier.align(Alignment.Start))
-            Text("Empieza tu aventura por el realismo mágico", fontSize = 16.sp,
-                color = Color.Gray, modifier = Modifier.padding(top = 8.dp).align(Alignment.Start))
+
+            Text(
+                text = "Explorando Colombia",
+                color = primaryOrange,
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.align(Alignment.Start)
+            )
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Error de Firebase
-            if (uiState.errorMessage != null) {
-                Card(
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE)),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Warning, null, tint = Color(0xFFD32F2F), modifier = Modifier.size(20.dp))
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(uiState.errorMessage!!, color = Color(0xFFD32F2F), fontSize = 13.sp)
-                    }
-                }
-            }
+            Text(
+                text = "Crea tu cuenta",
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black,
+                modifier = Modifier.align(Alignment.Start)
+            )
+            Text(
+                text = "Empieza tu aventura por el realismo mágico",
+                fontSize = 16.sp,
+                color = Color.Gray,
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .align(Alignment.Start)
+            )
 
-            // CAMPOS DE TEXTO
+            Spacer(modifier = Modifier.height(32.dp))
+
             Column(modifier = Modifier.fillMaxWidth()) {
-
-                // Nombre
                 RegisterField(
+                    label = "NOMBRE COMPLETO",
                     value = name,
                     onValueChange = { name = it },
-                    label = "NOMBRE COMPLETO",
-                    icon = Icons.Default.Person,
+                    placeholder = "Tu nombre",
+                    leadingIcon = Icons.Default.Person,
                     inputBg = inputBg
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
-                // Correo
                 RegisterField(
-                    value = email,
-                    onValueChange = { email = it; authViewModel.clearError() },
                     label = "CORREO ELECTRÓNICO",
-                    icon = Icons.Default.Email,
-                    inputBg = inputBg,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+                    value = email,
+                    onValueChange = { email = it },
+                    placeholder = "hola@ejemplo.com",
+                    leadingIcon = Icons.Default.Email,
+                    inputBg = inputBg
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
-                // Contraseña
                 RegisterField(
-                    value = password,
-                    onValueChange = { password = it; authViewModel.clearError() },
                     label = "CONTRASEÑA",
-                    icon = Icons.Default.Lock,
+                    value = password,
+                    onValueChange = { password = it },
+                    placeholder = "........",
+                    leadingIcon = Icons.Default.Lock,
                     inputBg = inputBg,
-                    isPassword = true,
-                    passwordVisible = passwordVisible,
-                    onPasswordVisibilityChange = { passwordVisible = !passwordVisible }
+                    isPassword = true
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
-                // Confirmar Contraseña
                 RegisterField(
+                    label = "CONFIRMAR",
                     value = confirmPassword,
-                    onValueChange = { confirmPassword = it; authViewModel.clearError() },
-                    label = "CONFIRMAR CONTRASEÑA",
-                    icon = Icons.Default.Refresh,
+                    onValueChange = { confirmPassword = it },
+                    placeholder = "........",
+                    leadingIcon = Icons.Default.Refresh,
                     inputBg = inputBg,
-                    isPassword = true,
-                    passwordVisible = confirmPasswordVisible,
-                    onPasswordVisibilityChange = { confirmPasswordVisible = !confirmPasswordVisible }
+                    isPassword = true
                 )
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Checkbox Términos
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                Checkbox(checked = acceptedTerms,
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Checkbox(
+                    checked = acceptedTerms,
                     onCheckedChange = { acceptedTerms = it },
-                    colors = CheckboxDefaults.colors(checkedColor = primaryOrange))
+                    colors = CheckboxDefaults.colors(checkedColor = primaryOrange)
+                )
                 Text(
                     text = buildAnnotatedString {
                         append("Acepto los ")
-                        withStyle(SpanStyle(color = primaryOrange, fontWeight = FontWeight.Bold)) {
+                        withStyle(style = SpanStyle(color = primaryOrange, fontWeight = FontWeight.Bold)) {
                             append("términos y condiciones")
                         }
                         append(" así como el tratamiento de datos personales.")
                     },
-                    fontSize = 12.sp, color = Color.Gray, lineHeight = 16.sp
+                    fontSize = 12.sp,
+                    color = Color.Gray,
+                    lineHeight = 16.sp
                 )
             }
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Botón Registrar
             Button(
-                onClick = { authViewModel.register(name, email, password, confirmPassword) },
-                enabled = !uiState.isLoading && acceptedTerms,
-                modifier = Modifier.fillMaxWidth().height(64.dp),
+                onClick = { onRegisterSuccess() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(64.dp),
                 shape = RoundedCornerShape(32.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                 contentPadding = PaddingValues()
@@ -188,50 +187,88 @@ fun RegisterScreen(
                         .fillMaxSize()
                         .background(
                             brush = Brush.horizontalGradient(
-                                colors = if (acceptedTerms) listOf(primaryOrange, Color(0xFFFF8A65))
-                                else listOf(Color.Gray, Color.LightGray)
+                                colors = listOf(primaryOrange, Color(0xFFFF8A65))
                             )
                         ),
                     contentAlignment = Alignment.Center
                 ) {
-                    if (uiState.isLoading) {
-                        CircularProgressIndicator(color = Color.White, modifier = Modifier.size(28.dp), strokeWidth = 2.dp)
-                    } else {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text("Registrarse", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Icon(Icons.AutoMirrored.Filled.ArrowForward, null, modifier = Modifier.size(24.dp), tint = Color.White)
-                        }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text("Registrarse", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, modifier = Modifier.size(24.dp))
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(40.dp))
-            Row(modifier = Modifier.padding(bottom = 16.dp)) {
-                Text("¿Ya tienes una cuenta? ", color = Color.Gray, fontSize = 14.sp)
-                Text("Inicia sesión", color = primaryOrange, fontSize = 14.sp,
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                HorizontalDivider(modifier = Modifier.weight(1f), thickness = 0.5.dp, color = Color.LightGray)
+                Text(
+                    text = " O REGÍSTRATE CON ",
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.clickable { onNavigateToLogin() })
+                    color = Color.Gray,
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                )
+                HorizontalDivider(modifier = Modifier.weight(1f), thickness = 0.5.dp, color = Color.LightGray)
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                SocialButton(
+                    text = "Google",
+                    modifier = Modifier.weight(1f),
+                    icon = Icons.Default.Email
+                )
+                SocialButton(
+                    text = "Apple",
+                    modifier = Modifier.weight(1f),
+                    icon = Icons.Default.Lock
+                )
+            }
+
+            Spacer(modifier = Modifier.height(40.dp))
+
+            Row(modifier = Modifier.padding(bottom = 16.dp)) {
+                Text(text = "¿Ya tienes una cuenta? ", color = Color.Gray, fontSize = 14.sp)
+                Text(
+                    text = "Inicia sesión",
+                    color = primaryOrange,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.clickable { onNavigateToLogin() }
+                )
             }
         }
     }
 }
 
-// COMPONENTE DE CAMPO DE TEXTO REUTILIZABLE (MEJORADO)
 @Composable
 fun RegisterField(
+    label: String,
     value: String,
     onValueChange: (String) -> Unit,
-    label: String,
-    icon: ImageVector,
+    placeholder: String,
+    leadingIcon: androidx.compose.ui.graphics.vector.ImageVector,
     inputBg: Color,
-    isPassword: Boolean = false,
-    passwordVisible: Boolean = false,
-    onPasswordVisibilityChange: () -> Unit = {},
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
+    modifier: Modifier = Modifier,
+    isPassword: Boolean = false
 ) {
-    Column {
-        Text(label, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.Gray)
+    Column(modifier = modifier) {
+        Text(
+            text = label,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Gray
+        )
         Spacer(modifier = Modifier.height(8.dp))
         TextField(
             value = value,
@@ -240,22 +277,14 @@ fun RegisterField(
                 .fillMaxWidth()
                 .height(56.dp)
                 .clip(RoundedCornerShape(28.dp)),
-            leadingIcon = { Icon(icon, null, tint = Color.Gray) },
-            trailingIcon = {
-                if (isPassword) {
-                    IconButton(onClick = onPasswordVisibilityChange) {
-                        Icon(
-                            imageVector = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                            contentDescription = null, tint = Color.Gray
-                        )
-                    }
-                }
-            },
-            visualTransformation = if (isPassword && !passwordVisible) PasswordVisualTransformation() else VisualTransformation.None,
-            keyboardOptions = if (isPassword) KeyboardOptions(keyboardType = KeyboardType.Password) else keyboardOptions,
+            placeholder = { Text(placeholder, color = Color.Gray) },
+            leadingIcon = { Icon(leadingIcon, contentDescription = null, tint = Color.Gray) },
+            visualTransformation = if (isPassword) PasswordVisualTransformation() else androidx.compose.ui.text.input.VisualTransformation.None,
+            keyboardOptions = KeyboardOptions(keyboardType = if (isPassword) KeyboardType.Password else KeyboardType.Text),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = inputBg,
                 unfocusedContainerColor = inputBg,
+                disabledContainerColor = inputBg,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent
             ),
