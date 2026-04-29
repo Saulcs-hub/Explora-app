@@ -1,4 +1,4 @@
-package co.edu.unab.carlossaulvillabona.exploraapp
+package co.edu.unab.carlossaulvillabona.exploraapp.ui.elements
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -25,6 +26,9 @@ import androidx.compose.ui.text.input.*
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+
+import co.edu.unab.carlossaulvillabona.exploraapp.validateEmail
+import co.edu.unab.carlossaulvillabona.exploraapp.validatePassword
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
@@ -38,6 +42,7 @@ fun RegisterScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {}
 ) {
+
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -302,8 +307,16 @@ fun RegisterScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                SocialButton(text = "Google", modifier = Modifier.weight(1f), icon = Icons.Default.Email)
-                SocialButton(text = "Apple", modifier = Modifier.weight(1f), icon = Icons.Default.Lock)
+                SocialButton(
+                    text = "Google",
+                    modifier = Modifier.weight(1f),
+                    icon = Icons.Default.Email
+                )
+                SocialButton(
+                    text = "Apple",
+                    modifier = Modifier.weight(1f),
+                    icon = Icons.Default.Lock
+                )
             }
 
             Spacer(modifier = Modifier.height(40.dp))
@@ -328,7 +341,7 @@ fun RegisterField(
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
-    leadingIcon: androidx.compose.ui.graphics.vector.ImageVector,
+    leadingIcon: ImageVector,
     inputBg: Color,
     modifier: Modifier = Modifier,
     isPassword: Boolean = false
